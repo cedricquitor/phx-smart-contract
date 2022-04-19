@@ -1,20 +1,21 @@
 const main = async () => {
   const recoContractFactory = await hre.ethers.getContractFactory("RecoPortal");
-  const recoContract = await recoContractFactory.deploy();
+  const recoContract = await recoContractFactory.deploy({
+    value: hre.ethers.utils.parseEther("0.1"),
+  });
   await recoContract.deployed();
   console.log("Contract Address:", recoContract.address);
 
-  let recoCount;
-  recoCount = await recoContract.getTotalReco();
-  console.log(recoCount.toNumber());
+  // Get contract balance.
+  let contractBalance = await hre.ethers.provider.getBalance(recoContract.address);
+  console.log("Contract Balance:", hre.ethers.utils.formatEther(contractBalance));
 
   // Sending recos
   let recoTxn = await recoContract.recommend("This is my reco!");
   await recoTxn.wait();
 
-  const [owner, randomPerson] = await hre.ethers.getSigners();
-  recoTxn = await recoContract.connect(randomPerson).recommend("This is another reco!");
-  await recoTxn.wait();
+  contractBalance = await hre.ethers.provider.getBalance(recoContract.address);
+  console.log("Contract Balance:", hre.ethers.utils.formatEther(contractBalance));
 
   let allRecos = await recoContract.getAllReco();
   console.log(allRecos);

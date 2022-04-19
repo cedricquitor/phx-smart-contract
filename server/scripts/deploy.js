@@ -6,7 +6,9 @@ const main = async () => {
   console.log("Account balance: ", accountBalance.toString());
 
   const recoContractFactory = await hre.ethers.getContractFactory("RecoPortal");
-  const recoContract = await recoContractFactory.deploy();
+  const recoContract = await recoContractFactory.deploy({
+    value: hre.ethers.utils.parseEther("0.1"),
+  });
   await recoContract.deployed();
 
   console.log("RecoPortal address: ", recoContract.address);
