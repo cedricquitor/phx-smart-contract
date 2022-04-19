@@ -6,7 +6,7 @@ import abi from "./utils/RecoPortal.json";
 export default function App() {
   // Just a state variable we use to store our user's public wallet.
   const [currentAccount, setCurrentAccount] = useState("");
-  const contractAddress = "0xf4fE8f5FD4B6483de75Fc8E22639eea1437902Ef";
+  const contractAddress = "0x845996fBA16b4045673C9c3BD8C21815821FE38b";
   const contractABI = abi.abi;
 
   const recommend = async () => {

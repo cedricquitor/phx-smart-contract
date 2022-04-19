@@ -1,24 +1,23 @@
 const main = async () => {
-  const [owner, randomPerson] = await hre.ethers.getSigners();
   const recoContractFactory = await hre.ethers.getContractFactory("RecoPortal");
   const recoContract = await recoContractFactory.deploy();
   await recoContract.deployed();
-
-  console.log("Contract deployed to:", recoContract.address);
-  console.log("Contract deployed by:", owner.address);
+  console.log("Contract Address:", recoContract.address);
 
   let recoCount;
   recoCount = await recoContract.getTotalReco();
+  console.log(recoCount.toNumber());
 
-  let recoTxn = await recoContract.recommend();
+  // Sending recos
+  let recoTxn = await recoContract.recommend("This is my reco!");
   await recoTxn.wait();
 
-  recoCount = await recoContract.getTotalReco();
-
-  recoTxn = await recoContract.connect(randomPerson).recommend();
+  const [owner, randomPerson] = await hre.ethers.getSigners();
+  recoTxn = await recoContract.connect(randomPerson).recommend("This is another reco!");
   await recoTxn.wait();
 
-  recoCount = await recoContract.getTotalReco();
+  let allRecos = await recoContract.getAllReco();
+  console.log(allRecos);
 };
 
 const runMain = async () => {
