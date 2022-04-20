@@ -86,7 +86,6 @@ export default function App() {
         const account = accounts[0];
         console.log("Found an authorized account:", account);
         setCurrentAccount(account);
-        getAllReco();
       } else {
         console.log("No authorized account found");
       }
@@ -98,7 +97,13 @@ export default function App() {
   // This runs our function when the page loads.
   useEffect(() => {
     checkIfWalletIsConnected();
-  }, [checkIfWalletIsConnected]);
+  }, []);
+
+  useEffect(() => {
+    if (currentAccount) {
+      getAllReco();
+    }
+  }, [currentAccount]);
 
   // Implement your connectWallet method here
   const connectWallet = async () => {
