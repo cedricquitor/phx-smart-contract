@@ -9,7 +9,7 @@ export default function App() {
   const [allRecos, setAllRecos] = useState([]);
 
   // Contract Variables
-  const contractAddress = "0x2Af68A835B6d6419Df3fAd12b465e9018563Fe88";
+  const contractAddress = "0x45d59DD0e7D4ddd8CdC6A72ca51CE14d1767e6AA";
   const contractABI = abi.abi;
 
   const getAllReco = async () => {

@@ -24,6 +24,9 @@ contract RecoPortal {
     // This is what lets me hold all the recos anyone ever sends to me!
     Reco[] recos;
 
+    // Storing the address with the last time user recommended.
+    mapping(address => uint256) public lastRecoAt;
+
     constructor() payable {
         console.log("I am a contract and I am smart.");
 
@@ -32,6 +35,14 @@ contract RecoPortal {
     }
 
     function recommend(string memory _message) public {
+        require(
+            lastRecoAt[msg.sender] + 15 minutes < block.timestamp,
+            "You need to wait 15 minutes before you could recommend again."
+        );
+
+        // Update current timestamp.
+        lastRecoAt[msg.sender] = block.timestamp;
+
         totalReco += 1;
         console.log("%s has recommended you something!", msg.sender, _message);
 
