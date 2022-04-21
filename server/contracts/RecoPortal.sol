@@ -7,6 +7,9 @@ import "hardhat/console.sol";
 contract RecoPortal {
     uint256 totalReco;
 
+    // Generate random number.
+    uint256 private seed;
+
     // Solidity Events
     event NewReco(address indexed from, uint256 timestamp, string message);
 
@@ -23,6 +26,9 @@ contract RecoPortal {
 
     constructor() payable {
         console.log("I am a contract and I am smart.");
+
+        // Initial seed.
+        seed = (block.timestamp + block.difficulty) % 100;
     }
 
     function recommend(string memory _message) public {
@@ -32,15 +38,24 @@ contract RecoPortal {
         // Store the reco date to array.
         recos.push(Reco(msg.sender, _message, block.timestamp));
 
-        emit NewReco(msg.sender, block.timestamp, _message);
+        // New seed for next user.
+        seed = (block.difficulty + block.timestamp + seed) % 100;
+        console.log("Random # generated: %d", seed);
 
-        uint256 prizeAmount = 0.00042069 ether;
-        require(
-            prizeAmount <= address(this).balance,
-            "Trying to withdraw more money than the contract has."
-        );
-        (bool success,) = (msg.sender).call{value: prizeAmount}("");
-        require(success, "Failed to withdraw money from the contract.");
+        // 50% chance that user wins the prize.
+        if (seed <= 50) {
+            console.log("%s won!", msg.sender);
+
+            uint256 prizeAmount = 0.00042069 ether;
+            require(
+                prizeAmount <= address(this).balance,
+                "Trying to withdraw more money than the contract has."
+            );
+            (bool success, ) = (msg.sender).call{value: prizeAmount}("");
+            require(success, "Failed to withdraw money from the contract.");
+        }
+
+        emit NewReco(msg.sender, block.timestamp, _message);
     }
 
     function getAllReco() public view returns (Reco[] memory) {

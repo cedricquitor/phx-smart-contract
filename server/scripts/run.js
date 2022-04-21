@@ -11,8 +11,14 @@ const main = async () => {
   console.log("Contract Balance:", hre.ethers.utils.formatEther(contractBalance));
 
   // Sending recos
-  let recoTxn = await recoContract.recommend("This is my reco!");
+  let recoTxn = await recoContract.recommend("This is reco #1!");
   await recoTxn.wait();
+
+  let recoTxn2 = await recoContract.recommend("This is reco #2!");
+  await recoTxn2.wait();
+
+  let recoTxn3 = await recoContract.recommend("This is reco #3!");
+  await recoTxn3.wait();
 
   contractBalance = await hre.ethers.provider.getBalance(recoContract.address);
   console.log("Contract Balance:", hre.ethers.utils.formatEther(contractBalance));
