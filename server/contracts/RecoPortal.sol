@@ -6,7 +6,6 @@ import "hardhat/console.sol";
 
 contract RecoPortal {
     uint256 totalReco;
-
     // Generate random number.
     uint256 private seed;
 
@@ -36,8 +35,8 @@ contract RecoPortal {
 
     function recommend(string memory _message) public {
         require(
-            lastRecoAt[msg.sender] + 15 minutes < block.timestamp,
-            "You need to wait 15 minutes before you could recommend again."
+            lastRecoAt[msg.sender] + 15 seconds < block.timestamp,
+            "Wait 15s before you could recommend again."
         );
 
         // Update current timestamp.

@@ -9,7 +9,7 @@ export default function App() {
   const [allRecos, setAllRecos] = useState([]);
 
   // Contract Variables
-  const contractAddress = "0x45d59DD0e7D4ddd8CdC6A72ca51CE14d1767e6AA";
+  const contractAddress = "0x94da063c3b6F021Bc92375343C1817E4AA396bce";
   const contractABI = abi.abi;
 
   const getAllReco = async () => {
@@ -24,13 +24,12 @@ export default function App() {
         const recos = await recoPortalContract.getAllReco();
 
         // Structure what data you need.
-        let recosCleaned = [];
-        recos.forEach((reco) => {
-          recosCleaned.push({
+        const recosCleaned = recos.map((reco) => {
+          return {
             address: reco.recommender,
             timestamp: new Date(reco.timestamp * 1000),
             message: reco.message,
-          });
+          };
         });
         setAllRecos(recosCleaned);
       } else {
@@ -40,6 +39,36 @@ export default function App() {
       console.log(error.message);
     }
   };
+
+  // Listen for emitter events.
+  useEffect(() => {
+    let recoPortalContract;
+
+    const onNewReco = (from, timestamp, message) => {
+      console.log("NewReco", from, timestamp, message);
+      setAllRecos((prevState) => [
+        ...prevState,
+        {
+          address: from,
+          timestamp: new Date(timestamp * 1000),
+          message: message,
+        },
+      ]);
+    };
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+
+      recoPortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+      recoPortalContract.on("NewReco", onNewReco);
+    }
+
+    return () => {
+      if (recoPortalContract) {
+        recoPortalContract.off("NewReco", onNewReco);
+      }
+    };
+  }, []);
 
   const recommend = async () => {
     try {
@@ -53,7 +82,7 @@ export default function App() {
         let count = await recoPortalContract.getTotalReco();
         console.log("Retrieved total wave count...", count.toNumber());
 
-        const recoTxn = await recoPortalContract.recommend("This is a recommendation.");
+        const recoTxn = await recoPortalContract.recommend("This is a recommendation!", { gasLimit: 300000 });
         console.log("Mining...", recoTxn.hash);
 
         await recoTxn.wait();
